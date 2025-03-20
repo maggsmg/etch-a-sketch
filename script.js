@@ -73,11 +73,12 @@ function resetGrid(){
 }
 
 function promptGridSize(){
-    gridSize = prompt("Input the size of the grid (max: 100)")
-    if (gridSize < 1 || gridSize > 100){
+    const newSize = prompt("Input the size of the grid (max: 100)")
+    if (newSize < 1 || newSize > 100){
         alert("Please enter a number between 1 and 100.");
     }
     else{
+        gridSize = newSize
         createGrid(gridSize)
     }
 }
