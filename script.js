@@ -4,6 +4,10 @@ let gridSize = 16;
 let lastColor = 'black';
 let isPainting = false;
 
+const blackBtn = document.querySelector("#black");
+const multiBtn = document.querySelector("#multi");
+const eraseBtn = document.querySelector("#eraser");
+
 function createGrid(size) {
     container.innerHTML = ''; 
     let squareSize = 400 / size;
@@ -91,6 +95,13 @@ function promptGridSize(){
 }
 
 function createBlackGrid(){
+    blackBtn.style.backgroundColor = '#000'
+    blackBtn.style.color = '#fff'
+    multiBtn.style.backgroundColor = '#fff'
+    multiBtn.style.color = '#000'
+    eraseBtn.style.backgroundColor = '#fff'
+    eraseBtn.style.color = '#000'
+
     for (let child of container.children) {
         child.removeEventListener("mouseover", changeToWhite);
         child.removeEventListener("mouseover", changeColor);
@@ -101,6 +112,13 @@ function createBlackGrid(){
 }
 
 function createMultiGrid(){
+    multiBtn.style.backgroundColor = 'red'
+    multiBtn.style.color = '#fff'
+    blackBtn.style.backgroundColor = '#fff'
+    blackBtn.style.color = '#000'
+    eraseBtn.style.backgroundColor = '#fff'
+    eraseBtn.style.color = '#000'
+
     for (let child of container.children) {
         child.removeEventListener("mouseover", changeToWhite);
         child.removeEventListener("mouseover", changeToBlack);
@@ -111,6 +129,12 @@ function createMultiGrid(){
 }
 
 function erasingGrid(){
+    multiBtn.style.backgroundColor = '#fff'
+    multiBtn.style.color = '#000'
+    blackBtn.style.backgroundColor = '#fff'
+    blackBtn.style.color = '#000'
+    eraseBtn.style.backgroundColor = 'gray'
+    eraseBtn.style.color = '#000'
     for (let child of container.children) {
         child.removeEventListener("mouseover", changeToBlack);
         child.removeEventListener("mouseover", changeColor);
@@ -135,4 +159,11 @@ document.getElementById("multi").addEventListener("click", ()=> createMultiGrid(
 document.getElementById("black").addEventListener("click", ()=> createBlackGrid());
 document.getElementById("eraser").addEventListener("click", ()=> erasingGrid());
 
+
+setTimeout(() => {
+    alert(`Welcome to Sketch Pad! 
+        This is one of my projects of The Odin Project Foundations course.The whole idea is to mimick those magnetic drawing pads we had growing up.
+        To use this drawing pad, hold your mouse button down in order to begin drawing and hover to erase when the erase button is active.You can change colors,erase, change the grid size (entering a number from 1 - 100) and reset the grid to start all over.
+        Have fun!`);
+}, 200)
 
