@@ -1,8 +1,8 @@
 const container = document.querySelector(".container");
 
 let gridSize = 16;
-
-let gridColor = 'black';
+let lastColor = 'black';
+let isPainting = false;
 
 function createGrid(size) {
     container.innerHTML = ''; 
@@ -14,13 +14,16 @@ function createGrid(size) {
         container.appendChild(cell);
         cell.style.width = `${widthSize}px`;
         cell.style.height = `${squareSize}px`;
+    }
 
-        if(gridColor == 'black'){
-            cell.addEventListener("mouseover", changeToBlack);
-        }
-        else{
-            cell.addEventListener("mouseover", changeColor);
-        }
+    if(lastColor === 'black'){
+        createBlackGrid()
+    }
+    else if (lastColor === 'multi'){
+        createMultiGrid()
+    }
+    else if (lastColor === 'white'){
+        erasingGrid()
     }
 }
 
@@ -29,41 +32,45 @@ function getRGBNumber(max) {
   }
   
 function changeColor(event) {
-    let red = getRGBNumber(255)
-    let green = getRGBNumber(255)
-    let blue = getRGBNumber(255)
-
-    event.target.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`
-
-
-    /*event.target.style.backgroundColor = "black";*/
+    if (isPainting == true){
+        let red = getRGBNumber(255)
+        let green = getRGBNumber(255)
+        let blue = getRGBNumber(255)
+    
+        event.target.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`
+    }
 }
 
 function changeToBlack(event) {
     let cell = event.target;
     let currentColor = cell.style.backgroundColor;
 
-    if (!currentColor || currentColor === "white") {
-        // If it's the first hover, start at 10% darkness
-        cell.style.backgroundColor = `rgba(0, 0, 0, 0.1)`;
-    } else {
-        // Extract RGBA values from the current color
-        let rgbaMatch = currentColor.match(/rgba?\((\d+), (\d+), (\d+), ([\d.]+)\)/);
+    if (isPainting == true){
+        if (!currentColor || currentColor === "white") {
+            // If it's the first hover, start at 10% darkness
+            cell.style.backgroundColor = `rgba(0, 0, 0, 0.1)`;
+        } else {
+            // Extract RGBA values from the current color
+            let rgbaMatch = currentColor.match(/rgba?\((\d+), (\d+), (\d+), ([\d.]+)\)/);
 
-        if (rgbaMatch) {
-            let currentOpacity = parseFloat(rgbaMatch[4]); // Get the current opacity
+            if (rgbaMatch) {
+                let currentOpacity = parseFloat(rgbaMatch[4]); // Get the current opacity
 
-            // Increase opacity by 10% but cap at 1.0 (fully black)
-            let newOpacity = Math.min(currentOpacity + 0.1, 1.0);
+                // Increase opacity by 10% but cap at 1.0 (fully black)
+                let newOpacity = Math.min(currentOpacity + 0.1, 1.0);
 
-            // Apply the new darker color
-            cell.style.backgroundColor = `rgba(0, 0, 0, ${newOpacity})`;
+                // Apply the new darker color
+                cell.style.backgroundColor = `rgba(0, 0, 0, ${newOpacity})`;
+            }
         }
     }
-    
 
 }
 
+
+function changeToWhite(event) {
+    event.target.style.backgroundColor = 'white'
+}
 
 function resetGrid(){
     let cells = document.querySelectorAll(".cell");
@@ -84,25 +91,48 @@ function promptGridSize(){
 }
 
 function createBlackGrid(){
-    gridColor = 'black'
-    createGrid(gridSize);
+    for (let child of container.children) {
+        child.removeEventListener("mouseover", changeToWhite);
+        child.removeEventListener("mouseover", changeColor);
+
+        child.addEventListener("mouseover", changeToBlack)
+    }
+    lastColor = 'black';
 }
 
 function createMultiGrid(){
-    gridColor = 'multi'
-    createGrid(gridSize);
+    for (let child of container.children) {
+        child.removeEventListener("mouseover", changeToWhite);
+        child.removeEventListener("mouseover", changeToBlack);
+
+        child.addEventListener("mouseover", changeColor)
+    }
+    lastColor = 'multi';
 }
 
+function erasingGrid(){
+    for (let child of container.children) {
+        child.removeEventListener("mouseover", changeToBlack);
+        child.removeEventListener("mouseover", changeColor);
+
+        child.addEventListener("mouseover", changeToWhite)
+    }
+   lastColor = 'white'
+}
 
 
 createGrid(gridSize);
 
 
+container.addEventListener("mousedown", () => isPainting = true);
+container.addEventListener("mouseup", () => isPainting = false);
+
 document.getElementById("reset").addEventListener("click", resetGrid);
 
 document.getElementById("btn-size").addEventListener("click", promptGridSize);
 
-document.getElementById("multi").addEventListener("click", ()=> createMultiGrid(gridSize));
-document.getElementById("black").addEventListener("click", ()=> createBlackGrid(gridSize));
+document.getElementById("multi").addEventListener("click", ()=> createMultiGrid());
+document.getElementById("black").addEventListener("click", ()=> createBlackGrid());
+document.getElementById("eraser").addEventListener("click", ()=> erasingGrid());
 
 
